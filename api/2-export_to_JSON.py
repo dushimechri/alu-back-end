@@ -9,11 +9,11 @@ import requests
 import sys
 
 if __name__ == '__main__':
-    userId = int(sys.argv[1])
+    user_id = int(sys.argv[1])
     user = requests.get("https://jsonplaceholder.typicode.com/users/{}".
-                        format(userId), verify=False).json()
+                        format(user_id), verify=False).json()
     todo = requests.get("https://jsonplaceholder.typicode.com/todos?userId={}".
-                        format(userId), verify=False).json()
+                        format(user_id), verify=False).json()
     username = user.get('username')
     tasks = []
     for task in todo:
@@ -24,5 +24,5 @@ if __name__ == '__main__':
         tasks.append(task_dict)
     jsonobj = {}
     jsonobj[userId] = tasks
-    with open("{}.json".format(userId), 'w') as jsonfile:
+    with open("{}.json".format(user_id), 'w') as jsonfile:
         json.dump(jsonobj, jsonfile)
