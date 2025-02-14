@@ -1,52 +1,36 @@
 #!/usr/bin/python3
+"""Script to get todos for a user from API"""
 
-"""
-Script to get TODO tasks for a user from the API using the sys and requests modules.
-
-This script retrieves a user's data and their TODO tasks from the 
-JSONPlaceholder API and outputs the number of completed and total tasks.
-"""
-
+import requests
 import sys
-import requests 
 
 
-def fetch_data():
-    """Fetches employee data and their TODO list from the JSONPlaceholder API."""
-    employe_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
-    todos_url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
+def main():
+    """main function"""
+    user_id = int(sys.argv[1])
+    todo_url = 'https://jsonplaceholder.typicode.com/todos'
+    user_url = 'https://jsonplaceholder.typicode.com/users/{}'.format(user_id)
 
-    employe_response = requests.get(employe_url)
+    response = requests.get(todo_url)
 
-	if employe_response.status_code != 200:
-	    print("there is no information of this employee")
-	    sys.exit(1)
-	else:
-	    employee_data = employe_response.json()
+    total_questions = 0
+    completed = []
+    for todo in response.json():
 
-	todo_response = requests.get(todos_url)
+        if todo['userId'] == user_id:
+            total_questions += 1
 
-	if todo_response.status_code != 200:
-	    print("there is no task of this employee")
-	    sys.exit(1)
-	else:
-	    task_data = todo_response.json()
-	employe_name = employee_data['name']
-	number_of_done_tasks = 0
-	number_of_undone_tasks = 0
-	for task in task_data:
-	    if task['completed'] == True:
-	        number_of_done_tasks += 1
-	    else:
-	        number_of_undone_tasks += 1
-	total_number_of_tasks = number_of_done_tasks + number_of_undone_tasks
-	print(f"Employee {employee_data['name']} is done with tasks({number_of_done_tasks}/{total_number_of_tasks}):")
-	titles = []
-	for task in task_data:
-	     if task['completed'] == True:
-	          titles.append(task['title'])
-	for i in titles:
-	    print(f"\t {i}")
+            if todo['completed']:
+                completed.append(todo['title'])
+
+    user_name = requests.get(user_url).json()['name']
+
+    printer = ("Employee {} is done with tasks({}/{}):".format(user_name,
+               len(completed), total_questions))
+    print(printer)
+    for q in completed:
+        print("\t {}".format(q))
+
 
 if __name__ == '__main__':
-        fetch_data()
+    main()
