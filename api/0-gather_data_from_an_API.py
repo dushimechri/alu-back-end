@@ -1,6 +1,8 @@
 #!/usr/bin/python3
-"""a Python script that, using this REST API"""
 
+"""
+This is the first file I created for the APIs
+"""
 import sys
 import requests 
 
