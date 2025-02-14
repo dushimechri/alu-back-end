@@ -1,33 +1,38 @@
 #!/usr/bin/python3
 """
-Using a REST API and an EMP_ID, save info about their TODO list in a csv file
+Request from API; Return TODO list progress given employee ID
+Export this data to CSV
 """
+import csv
 import requests
-import sys
+from sys import argv
+
+
+def to_csv():
+    """return API data"""
+    users = requests.get("http://jsonplaceholder.typicode.com/users")
+    for u in users.json():
+        if u.get('id') == int(argv[1]):
+            USERNAME = (u.get('username'))
+            break
+    TASK_STATUS_TITLE = []
+    todos = requests.get("http://jsonplaceholder.typicode.com/todos")
+    for t in todos.json():
+        if t.get('userId') == int(argv[1]):
+            TASK_STATUS_TITLE.append((t.get('completed'), t.get('title')))
+
+    """export to csv"""
+    filename = "{}.csv".format(argv[1])
+    with open(filename, "w") as csvfile:
+        fieldnames = ["USER_ID", "USERNAME",
+                      "TASK_COMPLETED_STATUS", "TASK_TITLE"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames,
+                                quoting=csv.QUOTE_ALL)
+        for task in TASK_STATUS_TITLE:
+            writer.writerow({"USER_ID": argv[1], "USERNAME": USERNAME,
+                             "TASK_COMPLETED_STATUS": task[0],
+                             "TASK_TITLE": task[1]})
 
 
 if __name__ == "__main__":
-    """ main section """
-    EMP_ID = sys.argv[1]
-    BASE_URL = 'https://jsonplaceholder.typicode.com'
-    employee = requests.get(
-        BASE_URL + f'/users/{EMP_ID}/').json()
-    EMPLOYEE_NAME = employee.get("username")
-    employee_todos = requests.get(
-        BASE_URL + f'/users/{EMP_ID}/todos').json()
-    serialized_todos = {}
-
-    for todo in employee_todos:
-        serialized_todos.update({todo.get("title"): todo.get("completed")})
-
-    COMPLETED_LEN = len([k for k, v in serialized_todos.items() if v is True])
-    with open(str(EMP_ID) + '.csv', "w") as f:
-        [
-            f.write(
-                '"' + str(sys.argv[1]) + '",' +
-                '"' + EMPLOYEE_NAME + '",' +
-                '"' + str(todo["completed"]) + '",' +
-                '"' + todo["title"] + '",' + "\n"
-            )
-            for todo in employee_todos
-        ]
+    to_csv()
