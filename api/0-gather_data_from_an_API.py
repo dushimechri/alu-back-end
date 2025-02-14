@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
 """
-This is the first file I created for the APIs
+The modules sys and requests for using to get API info 
 """
 import sys
 import requests 
 
-""" Functions for gathering  data from an API """
+""" lines of codes for gathering  data from an API """
 
 employee_id = sys.argv[1]
 employe_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
