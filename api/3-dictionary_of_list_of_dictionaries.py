@@ -1,33 +1,23 @@
 #!/usr/bin/python3
-
 """
-This script can export a JSON file with tasks for all employees.
-
-Needs:
-    - The requests module
+    python script that exports data in the JSON format
 """
 import json
 import requests
 
 if __name__ == "__main__":
-    users_url = "https://jsonplaceholder.typicode.com/users"
-    todos_url = "https://jsonplaceholder.typicode.com/todos"
+    url = "https://jsonplaceholder.typicode.com/"
+    users = requests.get(url + "users").json()
+    """
+        export to JSON
+    """
 
-    users = requests.get(users_url).json()
-    todos = requests.get(todos_url).json()
-
-    user_dict = {user['id']: user['username'] for user in users}
-
-    result = {}
-    for todo in todos:
-        user_id = todo['userId']
-        if str(user_id) not in result:
-            result[str(user_id)] = []
-        result[str(user_id)].append({
-            "username": user_dict[user_id],
-            "task": todo['title'],
-            "completed": todo['completed']
-        })
-
-    with open("todo_all_employees.json", 'w') as jsonfile:
-        json.dump(result, jsonfile)
+    with open("todo_all_employees.json", "w") as jsonfile:
+        json.dump({
+            u.get("id"): [{
+                "task": t.get("title"),
+                "completed": t.get("completed"),
+                "username": u.get("username")
+            } for t in requests.get(url + "todos",
+                                    params={"userId": u.get("id")}).json()]
+            for u in users}, jsonfile)
