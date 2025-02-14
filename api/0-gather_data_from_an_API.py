@@ -1,13 +1,10 @@
 #!/usr/bin/python3
 
 """
-This script gathers and processes data from the JSONPlaceholder API for a given employee ID.
-It fetches the employee's details and their TODO list, calculates the number of completed and 
-incomplete tasks, and then displays the results.
+Script to get TODO tasks for a user from the API using the sys and requests modules.
 
-Modules:
-        sys (standard library) - used to read the employee ID from command-line arguments.
-        requests (third-party library) - used to make HTTP requests to fetch employee data and tasks.
+This script retrieves a user's data and their TODO tasks from the 
+JSONPlaceholder API and outputs the number of completed and total tasks.
 """
 
 import sys
@@ -15,7 +12,7 @@ import requests
 
 
 def fetch_data():
-    """main function"""
+    """Fetches employee data and their TODO list from the JSONPlaceholder API."""
     employe_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
     todos_url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
 
