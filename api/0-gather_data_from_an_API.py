@@ -1,6 +1,11 @@
 #!/usr/bin/python3
+"""a Python script that, using this REST API"""
+
 import sys
 import requests 
+
+""" Functions for gathering  data from an API """
+
 employee_id = sys.argv[1]
 employe_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
 todos_url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
