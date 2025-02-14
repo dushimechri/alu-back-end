@@ -1,12 +1,18 @@
 #!/usr/bin/python3
 
 """
-The modules sys and requests for using to get API info 
+This script gathers and processes data from the JSONPlaceholder API for a given employee ID.
+It fetches the employee's details and their TODO list, calculates the number of completed and 
+incomplete tasks, and then displays the results.
+
+Modules:
+        sys (standard library) - used to read the employee ID from command-line arguments.
+        requests (third-party library) - used to make HTTP requests to fetch employee data and tasks.
 """
+
 import sys
 import requests 
 
-""" lines of codes for gathering  data from an API """
 
 employee_id = sys.argv[1]
 employe_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
