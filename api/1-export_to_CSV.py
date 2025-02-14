@@ -8,31 +8,38 @@ import requests
 from sys import argv
 
 
-def to_csv():
-    """return API data"""
-    users = requests.get("http://jsonplaceholder.typicode.com/users")
-    for u in users.json():
-        if u.get('id') == int(argv[1]):
-            USERNAME = (u.get('username'))
-            break
-    TASK_STATUS_TITLE = []
-    todos = requests.get("http://jsonplaceholder.typicode.com/todos")
-    for t in todos.json():
-        if t.get('userId') == int(argv[1]):
-            TASK_STATUS_TITLE.append((t.get('completed'), t.get('title')))
+def get_employee_tasks(employee_id):
+    url = f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        print(f"Failed to fetch data for employee {employee_id}")
+        return
+    
+    tasks = response.json()
+    
+    # Get employee name
+    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    user_response = requests.get(user_url)
+    if user_response.status_code == 200:
+        employee_name = user_response.json()['name']
+    else:
+        print(f"Failed to fetch employee data for {employee_id}")
+        return
 
-    """export to csv"""
-    filename = "{}.csv".format(argv[1])
-    with open(filename, "w") as csvfile:
-        fieldnames = ["USER_ID", "USERNAME",
-                      "TASK_COMPLETED_STATUS", "TASK_TITLE"]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames,
-                                quoting=csv.QUOTE_ALL)
-        for task in TASK_STATUS_TITLE:
-            writer.writerow({"USER_ID": argv[1], "USERNAME": USERNAME,
-                             "TASK_COMPLETED_STATUS": task[0],
-                             "TASK_TITLE": task[1]})
+    # Export data to CSV
+    filename = f"{employee_id}.csv"
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        for task in tasks:
+            writer.writerow([employee_id, employee_name, task['completed'], task['title']])
 
+    print(f"Data exported to {filename}")
 
 if __name__ == "__main__":
-    to_csv()
+    if len(sys.argv) != 2:
+        print("Usage: python3 1-export_to_CSV.py <employee_id>")
+        sys.exit(1)
+
+    employee_id = int(sys.argv[1])
+    get_employee_tasks(employee_id)
